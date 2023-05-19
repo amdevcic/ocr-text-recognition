@@ -8,7 +8,6 @@ from scipy.stats import *
 from skimage.filters import *
 from skimage.feature import *
 import numpy as np
-from skimage.filters.thresholding import threshold_minimum
 
 
 def calculateRotationValue(img, angle):
@@ -23,7 +22,7 @@ def unrotate(img):
 
     results = []
     angleDelta = 1
-    limit = 45
+    limit = 20
     angles = np.arange(-limit, limit + angleDelta, angleDelta)
     for angle in angles:
         hist, value = calculateRotationValue(binImg, angle)
@@ -46,25 +45,20 @@ def skeletonize(img, size=5, iterations=1):
 
 
 def preprocessing():
-    url = "http://sipi.usc.edu/database/download.php?vol=misc&img=4.2.07"
-    img = skimage.io.imread(url)
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    # cv2.imshow("Image", img)
-    # cv2.waitKey()
+
+    img = cv2.imread("sample/image1.jpg")
 
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # cv2.imshow("Gray image", gray_img)
-    # cv2.waitKey()
+    binary = cv2.adaptiveThreshold(gray_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                   cv2.THRESH_BINARY_INV,401 ,2)
 
-    img = cv2.imread("/Users/davidcemeljic/Downloads/skeletonizeTest.png", cv2.IMREAD_GRAYSCALE)
+    binary = unrotate(binary)
 
-    thresh_min = threshold_minimum(img)
-    print(thresh_min)
-    img = img > thresh_min
-    img = np.uint8(img) * 255
+    erosion = skeletonize(binary, 3, 2)
 
-    img = skeletonize(img, 5, 15)
-    cv2.imshow("Skeletonization", img)
+
+    img = cv2.resize(erosion, (img.shape[1]//10, img.shape[0]//10))
+    cv2.imshow("Thresholding", img)
     cv2.waitKey()
 
 
