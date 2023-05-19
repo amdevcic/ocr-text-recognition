@@ -35,9 +35,14 @@ def unrotate(img):
         if result[1] > maxValue:
             maxValue = result[1]
             actualAngle = result[0]
-    print(results)
-    print(actualAngle)
+
     return transform.rotate(img, actualAngle, resize=True)
+
+
+def skeletonize(img, size=5, iterations=1):
+    kernel = np.ones((size, size), np.uint8)
+    erodedImage = cv2.erode(img, kernel, iterations=iterations)
+    return erodedImage
 
 
 def preprocessing():
@@ -51,12 +56,15 @@ def preprocessing():
     # cv2.imshow("Gray image", gray_img)
     # cv2.waitKey()
 
-    thresh_min = threshold_minimum(gray_img)
-    print(thresh_min)
-    binary_min = gray_img > thresh_min
-    binary_min = np.uint8(binary_min) * 255
+    img = cv2.imread("/Users/davidcemeljic/Downloads/skeletonizeTest.png", cv2.IMREAD_GRAYSCALE)
 
-    cv2.imshow("Thresholding", binary_min)
+    thresh_min = threshold_minimum(img)
+    print(thresh_min)
+    img = img > thresh_min
+    img = np.uint8(img) * 255
+
+    img = skeletonize(img, 5, 15)
+    cv2.imshow("Skeletonization", img)
     cv2.waitKey()
 
 
