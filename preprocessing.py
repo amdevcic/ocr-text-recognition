@@ -37,6 +37,22 @@ def skeletonize(img, size=5, iterations=1):
     return erodedImage
 
 
+def preview(img_name, block_size, erode_size, erode_iterations):
+    img = skimage.io.imread(img_name)
+    max_dim = np.argmax(img.shape)
+    dim = [720, 720]
+    dim[1-max_dim] = int((img.shape[1-max_dim] / img.shape[max_dim]) * 720)
+    print(dim)
+    img = cv2.resize(img, (dim[1], dim[0]))
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    binary = cv2.adaptiveThreshold(gray_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                   cv2.THRESH_BINARY_INV, block_size, 2)
+
+    display = skeletonize(binary, erode_size, erode_iterations)
+
+    return display
+
 def preprocess(img_name, block_size, angle, erode_size, erode_iterations):
     img = skimage.io.imread(img_name)
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -53,4 +69,8 @@ def preprocess(img_name, block_size, angle, erode_size, erode_iterations):
 
 if __name__ == "__main__":
     url = "https://api.time.com/wp-content/uploads/2015/10/california.jpg"
+    pr = preview(url, 1001, 3, 2)
+    cv2.imshow("display", pr)
+    cv2.waitKey()
     preprocess(url, 1001, 5, 3, 2)
+
