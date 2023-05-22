@@ -2,7 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 import preprocessing
+import postprocessing
+import white_black_list
+import detectdigits
 import cv2
+import numpy as np
 
 
 def set_filename():
@@ -10,7 +14,7 @@ def set_filename():
     filename.set(fd.askopenfilename())
 
 
-def run_preprocessing():
+def run_ocr():
     global filename, block_size, angle_limit, erosion_size, erosion_iterations, text
     text.delete("1.0", "end")
     try:
@@ -19,8 +23,9 @@ def run_preprocessing():
                                             int(angle_limit.get()),
                                             int(erosion_size.get()),
                                             int(erosion_iterations.get()))
-        cv2.imshow("Display", img)
-        cv2.waitKey()
+        img = img.astype(np.uint8)
+        output = postprocessing.postprocess(img)
+        text.insert("1.0", output)
     except Exception as e:
         text.insert("end", "Error: " + str(e), ["error"])
 
@@ -29,9 +34,9 @@ def run_preview():
     global filename, block_size, erosion_size, erosion_iterations, text
     try:
         img = preprocessing.preview(filename.get(),
-                                         int(block_size.get()),
-                                         int(erosion_size.get()),
-                                         int(erosion_iterations.get()))
+                                    int(block_size.get()),
+                                    int(erosion_size.get()),
+                                    int(erosion_iterations.get()))
         cv2.imshow("Display", img)
         cv2.waitKey()
     except Exception as e:
@@ -71,7 +76,7 @@ preview_button = ttk.Button(settings_frame, text="Preview",
                             command=run_preview, width=20)
 # run OCR and display text output
 run_button = ttk.Button(settings_frame, text="Run",
-                        command=None, width=20)
+                        command=run_ocr, width=20)
 
 output_frame = ttk.Frame(main_frame)
 
