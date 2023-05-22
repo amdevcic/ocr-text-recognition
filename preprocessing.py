@@ -1,12 +1,6 @@
 import cv2
 import skimage.io
-from scipy.ndimage import *
 from skimage import transform
-from scipy.fft import *
-from scipy.signal import *
-from scipy.stats import *
-from skimage.filters import *
-from skimage.feature import *
 import numpy as np
 
 
@@ -17,12 +11,11 @@ def calculateRotationValue(img, angle):
     return rotatedHistogram, value
 
 
-def unrotate(img):
+def unrotate(img, limit):
     binImg = np.uint8(img) * 255
 
     results = []
     angleDelta = 1
-    limit = 20
     angles = np.arange(-limit, limit + angleDelta, angleDelta)
     for angle in angles:
         hist, value = calculateRotationValue(binImg, angle)
@@ -44,23 +37,20 @@ def skeletonize(img, size=5, iterations=1):
     return erodedImage
 
 
-def preprocessing():
-
-    img = cv2.imread("sample/image1.jpg")
-
+def preprocessing(img, block_size, angle, erode_size, erode_iterations):
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     binary = cv2.adaptiveThreshold(gray_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                   cv2.THRESH_BINARY_INV,401 ,2)
+                                   cv2.THRESH_BINARY_INV,block_size ,2)
 
-    binary = unrotate(binary)
+    binary = unrotate(binary, angle)
+    erosion = skeletonize(binary, erode_size, erode_iterations)
 
-    erosion = skeletonize(binary, 3, 2)
-
-
-    img = cv2.resize(erosion, (img.shape[1]//10, img.shape[0]//10))
-    cv2.imshow("Thresholding", img)
+    display = cv2.resize(erosion, (img.shape[1]//10, img.shape[0]//10))
+    cv2.imshow("Thresholding", display)
     cv2.waitKey()
 
 
 if __name__ == "__main__":
-    preprocessing()
+    img = skimage.io.imread("https://api.time.com/wp-content/uploads/2015/10/california.jpg")
+    preprocessing(img, 1001, 5, 3, 2)
