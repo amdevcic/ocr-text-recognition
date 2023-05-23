@@ -42,7 +42,6 @@ def preview(img_name, block_size, erode_size, erode_iterations):
     max_dim = np.argmax(img.shape)
     dim = [720, 720]
     dim[1-max_dim] = int((img.shape[1-max_dim] / img.shape[max_dim]) * 720)
-    print(dim)
     img = cv2.resize(img, (dim[1], dim[0]))
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 

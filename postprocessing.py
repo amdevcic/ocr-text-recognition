@@ -5,7 +5,7 @@ import argparse
 
 def postprocess(img):
     # use Tesseract to OCR the image
-    txt = pytesseract.image_to_string(img)
+    txt = pytesseract.image_to_string(img, lang='hrv', config='--tessdata-dir .')
     return txt
 
 
