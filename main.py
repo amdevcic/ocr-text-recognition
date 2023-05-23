@@ -81,13 +81,13 @@ run_button = ttk.Button(settings_frame, text="Run",
 output_frame = ttk.Frame(main_frame)
 
 output_label = ttk.Label(output_frame, text="Output:")
-text = tk.Text(output_frame, width=40, height=10)
+text = tk.Text(output_frame, width=60, height=20)
 text.insert("1.0", "")  # OCR output goes here
 text.tag_configure("error", foreground="red")
 
 main_frame.grid()
 
-settings_frame.grid(column=0, row=0, columnspan=4, rowspan=6)
+settings_frame.grid(column=0, row=0, columnspan=6, rowspan=6)
 
 file_label.grid(column=0, row=0, columnspan=4)
 file_entry.grid(column=0, row=1, columnspan=3)
